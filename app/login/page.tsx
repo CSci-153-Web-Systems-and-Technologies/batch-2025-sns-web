@@ -92,7 +92,7 @@ export default function LoginPage() {
                 id="email"
                 label="Faculty Email"
                 type="email"
-                placeholder="professor.name@university.edu"
+                placeholder="name@email.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

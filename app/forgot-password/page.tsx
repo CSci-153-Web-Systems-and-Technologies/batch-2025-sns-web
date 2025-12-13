@@ -213,9 +213,9 @@ export default function ForgotPasswordPage() {
           )}
         </CardContent>
 
-        <CardFooter className="justify-center pb-6 bg-gray-50/50 pt-6 rounded-b-xl">
-          <p className="text-xs text-gray-500 font-roboto">
-            Secure Faculty Recovery
+        <CardFooter className="justify-center pb-6 sm:pb-8 bg-gray-50/50 pt-6 rounded-b-xl">
+          <p className="text-xs text-gray-500 text-center font-roboto px-4">
+            © 2025 CSci 153 - Jonhei Akiu Lacre
           </p>
         </CardFooter>
       </Card>
