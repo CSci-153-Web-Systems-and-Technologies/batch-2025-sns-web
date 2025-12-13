@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RefreshCcw, Archive, X, Loader2 } from "lucide-react";
+import {
+  RefreshCcw,
+  Archive,
+  X,
+  Loader2,
+  Trash2,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +19,7 @@ interface ConfirmActionDialogProps {
   description: string;
   actionLabel: string;
   onConfirm: () => Promise<void>;
-  variant?: "danger" | "default";
+  variant?: "danger" | "warning" | "default";
 }
 
 export function ConfirmActionDialog({
@@ -52,6 +59,34 @@ export function ConfirmActionDialog({
 
   if (!isMounted) return null;
 
+  const getColors = () => {
+    switch (variant) {
+      case "danger":
+        return {
+          gradient: "from-red-600 to-red-500",
+          iconBg: "bg-red-50 text-red-600",
+          button: "bg-red-600 hover:bg-red-700",
+          icon: <Trash2 className="h-6 w-6" />,
+        };
+      case "warning":
+        return {
+          gradient: "from-amber-600 to-amber-500",
+          iconBg: "bg-amber-50 text-amber-600",
+          button: "bg-amber-600 hover:bg-amber-700",
+          icon: <Archive className="h-6 w-6" />,
+        };
+      default:
+        return {
+          gradient: "from-[#146939] to-[#00954f]",
+          iconBg: "bg-[#e6f4ea] text-[#146939]",
+          button: "bg-[#146939] hover:bg-[#00954f]",
+          icon: <RefreshCcw className="h-6 w-6" />,
+        };
+    }
+  };
+
+  const styles = getColors();
+
   return (
     <div
       className={cn(
@@ -70,9 +105,7 @@ export function ConfirmActionDialog({
         <div
           className={cn(
             "absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r",
-            variant === "danger"
-              ? "from-amber-600 to-amber-500"
-              : "from-[#146939] to-[#00954f]"
+            styles.gradient
           )}
         ></div>
 
@@ -87,16 +120,10 @@ export function ConfirmActionDialog({
           <div
             className={cn(
               "h-12 w-12 rounded-full flex items-center justify-center mb-4",
-              variant === "danger"
-                ? "bg-amber-50 text-amber-600"
-                : "bg-[#e6f4ea] text-[#146939]"
+              styles.iconBg
             )}
           >
-            {variant === "danger" ? (
-              <Archive className="h-6 w-6" />
-            ) : (
-              <RefreshCcw className="h-6 w-6" />
-            )}
+            {styles.icon}
           </div>
 
           <h3 className="text-xl font-bold font-montserrat text-[#17321A]">
@@ -119,9 +146,7 @@ export function ConfirmActionDialog({
               disabled={loading}
               className={cn(
                 "flex-1 text-white font-montserrat h-10 shadow-md hover:shadow-lg transition-all rounded-xl cursor-pointer",
-                variant === "danger"
-                  ? "bg-amber-600 hover:bg-amber-700"
-                  : "bg-[#146939] hover:bg-[#00954f]"
+                styles.button
               )}
             >
               {loading ? (

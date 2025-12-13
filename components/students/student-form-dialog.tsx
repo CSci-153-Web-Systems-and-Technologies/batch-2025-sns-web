@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, UserPlus, Loader2, Save, Check } from "lucide-react";
+import { X, UserPlus, Loader2, Save, Check, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,17 +15,26 @@ interface ClassItem {
   code: string;
 }
 
-interface AddStudentDialogProps {
+interface Student {
+  id: string;
+  student_id: string | null;
+  full_name: string;
+  email: string | null;
+}
+
+interface StudentFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   availableClasses: ClassItem[];
+  studentToEdit?: Student | null;
 }
 
-export function AddStudentDialog({
+export function StudentFormDialog({
   open,
   onOpenChange,
   availableClasses,
-}: AddStudentDialogProps) {
+  studentToEdit,
+}: StudentFormDialogProps) {
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -35,6 +44,7 @@ export function AddStudentDialog({
 
   const router = useRouter();
   const supabase = createClient();
+  const isEditing = !!studentToEdit;
 
   useEffect(() => {
     if (open) {
@@ -68,33 +78,37 @@ export function AddStudentDialog({
     const email = formData.get("email") as string;
     const studentId = formData.get("studentId") as string;
 
-    const { data: student, error: studentError } = await supabase
-      .from("students")
-      .insert({
-        full_name: fullName,
-        email: email,
-        student_id: studentId,
-      })
-      .select()
-      .single();
+    if (isEditing && studentToEdit) {
+      const { error } = await supabase
+        .from("students")
+        .update({
+          full_name: fullName,
+          email: email,
+          student_id: studentId,
+        })
+        .eq("id", studentToEdit.id);
 
-    if (studentError) {
-      console.error("Error creating student:", studentError);
-      setLoading(false);
-      return;
-    }
+      if (error) console.error("Error updating student:", error);
+    } else {
+      const { data: student, error: studentError } = await supabase
+        .from("students")
+        .insert({
+          full_name: fullName,
+          email: email,
+          student_id: studentId,
+        })
+        .select()
+        .single();
 
-    if (selectedClasses.size > 0 && student) {
-      const enrollments = Array.from(selectedClasses).map((classId) => ({
-        student_id: student.id,
-        class_id: classId,
-      }));
-
-      const { error: enrollError } = await supabase
-        .from("enrollments")
-        .insert(enrollments);
-
-      if (enrollError) console.error("Error enrolling student:", enrollError);
+      if (studentError) {
+        console.error("Error creating student:", studentError);
+      } else if (selectedClasses.size > 0 && student) {
+        const enrollments = Array.from(selectedClasses).map((classId) => ({
+          student_id: student.id,
+          class_id: classId,
+        }));
+        await supabase.from("enrollments").insert(enrollments);
+      }
     }
 
     setLoading(false);
@@ -125,10 +139,12 @@ export function AddStudentDialog({
         <div className="px-6 pt-8 pb-2 flex justify-between items-start shrink-0">
           <div>
             <h2 className="text-2xl font-bold font-montserrat text-[#17321A]">
-              Add New Student
+              {isEditing ? "Edit Student Profile" : "Add New Student"}
             </h2>
             <p className="text-sm text-gray-500 font-roboto mt-1">
-              Enter student details and enroll them in classes.
+              {isEditing
+                ? "Update student information below."
+                : "Enter details and enroll in classes."}
             </p>
           </div>
           <button
@@ -156,6 +172,7 @@ export function AddStudentDialog({
                   <Input
                     id="studentId"
                     name="studentId"
+                    defaultValue={studentToEdit?.student_id || ""}
                     placeholder="e.g. 2024-001"
                     required
                     className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 rounded-xl"
@@ -171,6 +188,7 @@ export function AddStudentDialog({
                   <Input
                     id="fullName"
                     name="fullName"
+                    defaultValue={studentToEdit?.full_name || ""}
                     placeholder="e.g. John Doe"
                     required
                     className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 rounded-xl"
@@ -189,55 +207,58 @@ export function AddStudentDialog({
                   id="email"
                   name="email"
                   type="email"
+                  defaultValue={studentToEdit?.email || ""}
                   placeholder="student@school.edu"
                   className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 rounded-xl"
                 />
               </div>
             </div>
 
-            <div className="space-y-3 pt-2">
-              <Label className="text-[#17321A] font-bold font-roboto text-sm">
-                Enroll in Classes (Optional)
-              </Label>
-              <div className="border border-gray-100 rounded-xl p-3 bg-gray-50/30 max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
-                {availableClasses.length === 0 ? (
-                  <p className="text-xs text-gray-400 text-center py-2">
-                    No active classes found.
-                  </p>
-                ) : (
-                  availableClasses.map((cls) => {
-                    const isSelected = selectedClasses.has(cls.id);
-                    return (
-                      <div
-                        key={cls.id}
-                        onClick={() => toggleClass(cls.id)}
-                        className={cn(
-                          "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
-                          isSelected
-                            ? "bg-[#e6f4ea] border-[#00954f]/30"
-                            : "bg-white border-gray-100 hover:border-gray-300"
-                        )}
-                      >
-                        <div>
-                          <p
-                            className={cn(
-                              "text-sm font-semibold",
-                              isSelected ? "text-[#146939]" : "text-gray-700"
-                            )}
-                          >
-                            {cls.name}
-                          </p>
-                          <p className="text-xs text-gray-500">{cls.code}</p>
+            {!isEditing && (
+              <div className="space-y-3 pt-2">
+                <Label className="text-[#17321A] font-bold font-roboto text-sm">
+                  Enroll in Classes (Optional)
+                </Label>
+                <div className="border border-gray-100 rounded-xl p-3 bg-gray-50/30 max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
+                  {availableClasses.length === 0 ? (
+                    <p className="text-xs text-gray-400 text-center py-2">
+                      No active classes found.
+                    </p>
+                  ) : (
+                    availableClasses.map((cls) => {
+                      const isSelected = selectedClasses.has(cls.id);
+                      return (
+                        <div
+                          key={cls.id}
+                          onClick={() => toggleClass(cls.id)}
+                          className={cn(
+                            "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
+                            isSelected
+                              ? "bg-[#e6f4ea] border-[#00954f]/30"
+                              : "bg-white border-gray-100 hover:border-gray-300"
+                          )}
+                        >
+                          <div>
+                            <p
+                              className={cn(
+                                "text-sm font-semibold",
+                                isSelected ? "text-[#146939]" : "text-gray-700"
+                              )}
+                            >
+                              {cls.name}
+                            </p>
+                            <p className="text-xs text-gray-500">{cls.code}</p>
+                          </div>
+                          {isSelected && (
+                            <Check className="h-4 w-4 text-[#146939]" />
+                          )}
                         </div>
-                        {isSelected && (
-                          <Check className="h-4 w-4 text-[#146939]" />
-                        )}
-                      </div>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="p-6 pt-2 border-t border-gray-50 bg-gray-50/30 flex justify-end gap-3 shrink-0">
@@ -256,10 +277,12 @@ export function AddStudentDialog({
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : isEditing ? (
+                <Save className="h-4 w-4 mr-2" />
               ) : (
                 <UserPlus className="h-4 w-4 mr-2" />
               )}
-              Add Student
+              {isEditing ? "Save Changes" : "Add Student"}
             </Button>
           </div>
         </form>

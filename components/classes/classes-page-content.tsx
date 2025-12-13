@@ -29,7 +29,7 @@ import {
 import Link from "next/link";
 import { ClassFormDialog } from "./class-form-dialog";
 import { ManageStudentsDialog } from "./manage-students-dialog";
-import { ConfirmActionDialog } from "./confirm-action-dialog"; // Import the new dialog
+import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -156,7 +156,6 @@ export function ClassesPageContent({
               key={cls.id}
               className={cn(
                 "group relative border shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white overflow-hidden hover:-translate-y-2 flex flex-col justify-between",
-
                 view === "archived"
                   ? "border-gray-200 opacity-95 grayscale-[10%]"
                   : "border-gray-100"
@@ -238,7 +237,11 @@ export function ClassesPageContent({
                 <div className="flex items-center text-sm text-gray-500 font-roboto">
                   <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
                     <Users className="h-4 w-4 text-[#00954f]" />
-                    <span>{cls.student_count || 0} Students</span>
+
+                    <span>
+                      {cls.student_count || 0}{" "}
+                      {cls.student_count === 1 ? "Student" : "Students"}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -304,12 +307,12 @@ export function ClassesPageContent({
         }
         description={
           confirmAction?.type === "archive"
-            ? "Are you sure you want to archive this class? It will be moved to the Archived tab and hidden from your main dashboard."
+            ? "Are you sure you want to archive this class? It will be moved to the Archived tab."
             : "Are you sure you want to restore this class? It will be moved back to your Active Classes list."
         }
         actionLabel={confirmAction?.type === "archive" ? "Archive" : "Restore"}
         onConfirm={executeToggleStatus}
-        variant={confirmAction?.type === "archive" ? "danger" : "default"}
+        variant={confirmAction?.type === "archive" ? "warning" : "default"}
       />
     </div>
   );
