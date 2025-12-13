@@ -21,6 +21,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface Exam {
   id: string;
@@ -44,6 +45,7 @@ export function ExamReleaseCard({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
   const isReleased = exam.release_status === "released";
 
   const handleReleaseNow = async () => {
@@ -66,7 +68,9 @@ export function ExamReleaseCard({
 
     if (error) {
       console.error("Error releasing results:", error);
+      addToast("Failed to release results.", "error");
     } else {
+      addToast("Exam results released successfully.", "success");
       router.refresh();
     }
     setLoadingBtn(false);

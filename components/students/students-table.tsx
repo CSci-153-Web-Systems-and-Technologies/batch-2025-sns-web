@@ -24,6 +24,7 @@ import { ImportStudentsDialog } from "./import-students-dialog";
 import { ConfirmActionDialog } from "@/components/classes/confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface Student {
   id: string;
@@ -61,6 +62,7 @@ export function StudentsTable({
 
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
 
   const handleAddClick = () => {
     setStudentToEdit(null);
@@ -78,8 +80,13 @@ export function StudentsTable({
       .from("students")
       .delete()
       .eq("id", studentToDelete.id);
-    if (error) console.error("Error removing student:", error);
-    else router.refresh();
+    if (error) {
+      console.error("Error removing student:", error);
+      addToast("Failed to delete student.", "error");
+    } else {
+      addToast("Student removed successfully.", "success");
+      router.refresh();
+    }
   };
 
   const filteredStudents = students.filter(

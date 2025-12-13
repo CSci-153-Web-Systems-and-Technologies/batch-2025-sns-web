@@ -33,6 +33,7 @@ import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ClassItem {
   id: string;
@@ -71,6 +72,7 @@ export function ClassesPageContent({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
 
   const displayedClasses = classes.filter((cls) => cls.status === view);
 
@@ -93,9 +95,16 @@ export function ClassesPageContent({
       .eq("id", confirmAction.id);
 
     if (!error) {
+      addToast(
+        confirmAction.type === "archive"
+          ? "Class archived successfully."
+          : "Class restored successfully.",
+        "success"
+      );
       router.refresh();
     } else {
       console.error(`Error ${confirmAction.type}ing class:`, error);
+      addToast("Action failed. Please try again.", "error");
     }
   };
 
@@ -237,7 +246,6 @@ export function ClassesPageContent({
                 <div className="flex items-center text-sm text-gray-500 font-roboto">
                   <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
                     <Users className="h-4 w-4 text-[#00954f]" />
-
                     <span>
                       {cls.student_count || 0}{" "}
                       {cls.student_count === 1 ? "Student" : "Students"}

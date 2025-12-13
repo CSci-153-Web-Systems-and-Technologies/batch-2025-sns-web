@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ClassItem {
   id: string;
@@ -32,6 +33,7 @@ export function ClassFormDialog({
 
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
   const isEditing = !!classToEdit;
 
   useEffect(() => {
@@ -76,7 +78,14 @@ export function ClassFormDialog({
 
     if (error) {
       console.error(error);
+      addToast("Failed to save class details.", "error");
     } else {
+      addToast(
+        isEditing
+          ? "Class updated successfully."
+          : "New class created successfully.",
+        "success"
+      );
       onOpenChange(false);
       router.refresh();
     }

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ClassItem {
   id: string;
@@ -44,6 +45,7 @@ export function StudentFormDialog({
 
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
   const isEditing = !!studentToEdit;
 
   useEffect(() => {
@@ -88,7 +90,12 @@ export function StudentFormDialog({
         })
         .eq("id", studentToEdit.id);
 
-      if (error) console.error("Error updating student:", error);
+      if (error) {
+        console.error("Error updating student:", error);
+        addToast("Failed to update student profile.", "error");
+      } else {
+        addToast("Student profile updated successfully.", "success");
+      }
     } else {
       const { data: student, error: studentError } = await supabase
         .from("students")
@@ -102,12 +109,16 @@ export function StudentFormDialog({
 
       if (studentError) {
         console.error("Error creating student:", studentError);
-      } else if (selectedClasses.size > 0 && student) {
-        const enrollments = Array.from(selectedClasses).map((classId) => ({
-          student_id: student.id,
-          class_id: classId,
-        }));
-        await supabase.from("enrollments").insert(enrollments);
+        addToast("Failed to add student.", "error");
+      } else {
+        if (selectedClasses.size > 0 && student) {
+          const enrollments = Array.from(selectedClasses).map((classId) => ({
+            student_id: student.id,
+            class_id: classId,
+          }));
+          await supabase.from("enrollments").insert(enrollments);
+        }
+        addToast("New student added successfully.", "success");
       }
     }
 

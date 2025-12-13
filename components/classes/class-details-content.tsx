@@ -28,6 +28,7 @@ import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { ExamFormDialog } from "@/components/exams/exam-form-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface Student {
   id: string;
@@ -56,12 +57,13 @@ export function ClassDetailsContent({
   const [search, setSearch] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
-  const [isExamOpen, setIsExamOpen] = useState(false); // New state for Exam Dialog
+  const [isExamOpen, setIsExamOpen] = useState(false);
 
   const [studentToRemove, setStudentToRemove] = useState<Student | null>(null);
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
 
   const filteredStudents = students.filter(
     (s) =>
@@ -79,7 +81,9 @@ export function ClassDetailsContent({
 
     if (error) {
       console.error("Error removing student:", error);
+      addToast("Failed to remove student.", "error");
     } else {
+      addToast("Student removed from class successfully.", "success");
       router.refresh();
     }
   };
@@ -268,7 +272,9 @@ export function ClassDetailsContent({
       <ExamFormDialog
         open={isExamOpen}
         onOpenChange={setIsExamOpen}
-        availableClasses={[classData]}
+        availableClasses={[
+          { id: classData.id, name: classData.name, code: classData.code },
+        ]}
         defaultClassCode={classData.code}
       />
 

@@ -30,6 +30,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ExamItem {
   id: string;
@@ -59,6 +60,7 @@ export function ExamsPageContent({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
 
   const handleDeleteExam = async () => {
     if (!examToDelete) return;
@@ -68,8 +70,13 @@ export function ExamsPageContent({
       .delete()
       .eq("id", examToDelete.id);
 
-    if (error) console.error("Error deleting exam:", error);
-    else router.refresh();
+    if (error) {
+      console.error("Error deleting exam:", error);
+      addToast("Failed to delete exam.", "error");
+    } else {
+      addToast("Exam deleted successfully.", "success");
+      router.refresh();
+    }
   };
 
   return (

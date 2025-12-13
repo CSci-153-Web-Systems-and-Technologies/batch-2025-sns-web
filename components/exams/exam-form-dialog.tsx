@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Save, FileText } from "lucide-react";
+import { X, Loader2, Save, FileText, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { FormSelect, FormDatePicker } from "@/components/ui/form-components";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ClassItem {
   id: string;
@@ -44,6 +45,7 @@ export function ExamFormDialog({
 
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
   const isEditing = !!examToEdit;
 
   useEffect(() => {
@@ -68,11 +70,7 @@ export function ExamFormDialog({
     const classCode = formData.get("classCode") as string;
     const date = formData.get("date") as string;
 
-    const examData = {
-      name,
-      class_code: classCode,
-      date,
-    };
+    const examData = { name, class_code: classCode, date };
 
     let error;
 
@@ -93,7 +91,12 @@ export function ExamFormDialog({
 
     if (error) {
       console.error("Error saving exam:", error);
+      addToast("Failed to save exam details.", "error");
     } else {
+      addToast(
+        isEditing ? "Exam updated successfully." : "Exam created successfully.",
+        "success"
+      );
       onOpenChange(false);
       router.refresh();
     }

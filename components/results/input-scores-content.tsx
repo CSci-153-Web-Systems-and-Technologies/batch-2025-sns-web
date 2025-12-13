@@ -17,6 +17,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ManageStudentsDialog } from "@/components/classes/manage-students-dialog";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface StudentScore {
   id: string;
@@ -66,6 +67,7 @@ export function InputScoresContent({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
 
   const handleScoreChange = (studentId: string, val: string) => {
     if (val === "" || /^\d+$/.test(val)) {
@@ -89,8 +91,9 @@ export function InputScoresContent({
     setSaving(false);
     if (error) {
       console.error("Error saving scores:", error);
-      alert("Failed to save scores. Please try again.");
+      addToast("Failed to save scores.", "error");
     } else {
+      addToast("Scores saved successfully.", "success");
       router.refresh();
     }
   };
@@ -105,7 +108,6 @@ export function InputScoresContent({
       return;
 
     setReleasing(true);
-
     await handleSave();
 
     const { error } = await supabase
@@ -115,8 +117,9 @@ export function InputScoresContent({
 
     if (error) {
       console.error("Error releasing:", error);
-      alert("Failed to release results.");
+      addToast("Failed to release results.", "error");
     } else {
+      addToast("Results released successfully.", "success");
       setIsReleased(true);
       router.refresh();
     }

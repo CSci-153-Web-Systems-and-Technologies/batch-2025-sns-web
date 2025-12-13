@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface Student {
   id: string;
@@ -27,7 +28,6 @@ interface ManageStudentsDialogProps {
   classId: string;
   className: string;
   allStudents: Student[];
-
   title?: string;
   actionLabel?: string;
 }
@@ -52,6 +52,7 @@ export function ManageStudentsDialog({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (open) {
@@ -95,6 +96,7 @@ export function ManageStudentsDialog({
       const newSet = new Set(enrolledStudentIds);
       newSet.delete(studentId);
       setEnrolledStudentIds(newSet);
+      addToast("Student removed from class.", "info");
     } else {
       await supabase
         .from("enrollments")
@@ -103,6 +105,7 @@ export function ManageStudentsDialog({
       const newSet = new Set(enrolledStudentIds);
       newSet.add(studentId);
       setEnrolledStudentIds(newSet);
+      addToast("Student enrolled successfully.", "success");
     }
 
     setProcessingId(null);

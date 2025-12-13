@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface ImportStudentsDialogProps {
   open: boolean;
@@ -33,6 +34,7 @@ export function ImportStudentsDialog({
 
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (open) {
@@ -106,6 +108,7 @@ export function ImportStudentsDialog({
       }
 
       setSuccessCount(students.length);
+      addToast(`Successfully imported ${students.length} students!`, "success");
       router.refresh();
 
       setTimeout(() => {
@@ -114,6 +117,7 @@ export function ImportStudentsDialog({
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to import students.");
+      addToast("Failed to import students.", "error");
     } finally {
       setLoading(false);
     }
