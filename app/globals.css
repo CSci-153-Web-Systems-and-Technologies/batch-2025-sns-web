@@ -37,51 +37,51 @@
 :root {
   --radius: 0.5rem;
 
-  --background: 0 0% 100%;
+  --background: hsl(0 0% 100%);
 
-  --foreground: 127 39% 14%;
+  --foreground: hsl(127 39% 14%);
 
-  --primary: 146 68% 25%;
-  --primary-foreground: 0 0% 100%;
+  --primary: hsl(146 68% 25%);
+  --primary-foreground: hsl(0 0% 100%);
 
-  --secondary: 145 80% 96%;
-  --secondary-foreground: 146 68% 25%;
+  --secondary: hsl(145 80% 96%);
+  --secondary-foreground: hsl(146 68% 25%);
 
-  --accent: 152 100% 29%;
-  --accent-foreground: 0 0% 100%;
+  --accent: hsl(152 100% 29%);
+  --accent-foreground: hsl(0 0% 100%);
 
-  --ring: 152 100% 29%;
+  --ring: hsl(152 100% 29%);
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
 }
 
 .dark {
-  --background: 127 39% 10%;
-  --foreground: 210 40% 98%;
+  --background: hsl(127 39% 10%);
+  --foreground: hsl(210 40% 98%);
 
-  --primary: 152 100% 29%;
-  --primary-foreground: 0 0% 100%;
+  --primary: hsl(152 100% 29%);
+  --primary-foreground: hsl(0 0% 100%);
 
-  --secondary: 146 68% 25%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: hsl(146 68% 25%);
+  --secondary-foreground: hsl(210 40% 98%);
 
-  --muted: 127 30% 15%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: hsl(127 30% 15%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
 
-  --accent: 146 68% 25%;
-  --accent-foreground: 210 40% 98%;
+  --accent: hsl(146 68% 25%);
+  --accent-foreground: hsl(210 40% 98%);
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
 
-  --border: 127 30% 20%;
-  --input: 127 30% 20%;
-  --ring: 152 100% 29%;
+  --border: hsl(127 30% 20%);
+  --input: hsl(127 30% 20%);
+  --ring: hsl(152 100% 29%);
 }
 
 @layer base {
