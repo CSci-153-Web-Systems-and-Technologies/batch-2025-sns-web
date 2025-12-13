@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PlusCircle, X, Loader2 } from "lucide-react";
+import { PlusCircle, X, Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,25 +9,34 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export function CreateClassDialog({
-  open,
-  onOpenChange,
-}: {
+interface ClassItem {
+  id: string;
+  name: string;
+  code: string;
+}
+
+interface ClassFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
-  const [loading, setLoading] = useState(false);
+  classToEdit?: ClassItem | null;
+}
 
+export function ClassFormDialog({
+  open,
+  onOpenChange,
+  classToEdit,
+}: ClassFormDialogProps) {
+  const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   const router = useRouter();
   const supabase = createClient();
+  const isEditing = !!classToEdit;
 
   useEffect(() => {
     if (open) {
       setIsMounted(true);
-
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsVisible(true);
@@ -35,7 +44,6 @@ export function CreateClassDialog({
       });
     } else {
       setIsVisible(false);
-
       const timer = setTimeout(() => setIsMounted(false), 300);
       return () => clearTimeout(timer);
     }
@@ -49,9 +57,20 @@ export function CreateClassDialog({
     const name = formData.get("name") as string;
     const code = formData.get("code") as string;
 
-    const { error } = await supabase
-      .from("classes")
-      .insert({ name, code, status: "active" });
+    let error;
+
+    if (isEditing && classToEdit) {
+      const result = await supabase
+        .from("classes")
+        .update({ name, code })
+        .eq("id", classToEdit.id);
+      error = result.error;
+    } else {
+      const result = await supabase
+        .from("classes")
+        .insert({ name, code, status: "active" });
+      error = result.error;
+    }
 
     setLoading(false);
 
@@ -75,7 +94,6 @@ export function CreateClassDialog({
       <div
         className={cn(
           "bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
-
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
             : "scale-95 translate-y-4 opacity-0"
@@ -86,10 +104,12 @@ export function CreateClassDialog({
 
           <div className="relative z-10">
             <h2 className="text-xl font-bold font-montserrat">
-              Create New Class
+              {isEditing ? "Edit Class" : "Create New Class"}
             </h2>
             <p className="text-xs text-gray-200 font-roboto mt-1 opacity-80">
-              Add a new course to your curriculum.
+              {isEditing
+                ? "Update class details."
+                : "Add a new course to your curriculum."}
             </p>
           </div>
           <button
@@ -111,6 +131,7 @@ export function CreateClassDialog({
             <Input
               id="name"
               name="name"
+              defaultValue={classToEdit?.name}
               placeholder="e.g. Advanced Chemistry"
               required
               className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11"
@@ -127,6 +148,7 @@ export function CreateClassDialog({
             <Input
               id="code"
               name="code"
+              defaultValue={classToEdit?.code}
               placeholder="e.g. CHEM-301"
               required
               className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11"
@@ -138,21 +160,23 @@ export function CreateClassDialog({
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}
-              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat h-11 px-6"
+              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat h-11 px-6 cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[140px] h-11 shadow-lg hover:shadow-xl transition-all"
+              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[140px] h-11 shadow-lg hover:shadow-xl transition-all cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : isEditing ? (
+                <Save className="h-4 w-4 mr-2" />
               ) : (
                 <PlusCircle className="h-4 w-4 mr-2" />
               )}
-              Create Class
+              {isEditing ? "Save Changes" : "Create Class"}
             </Button>
           </div>
         </form>
