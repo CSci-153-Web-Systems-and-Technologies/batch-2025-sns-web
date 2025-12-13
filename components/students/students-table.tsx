@@ -9,7 +9,7 @@ import {
   UserPlus,
   ChevronLeft,
   ChevronRight,
-  BookOpen,
+  FileUp,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StudentFormDialog } from "./student-form-dialog";
+import { ImportStudentsDialog } from "./import-students-dialog";
 import { ConfirmActionDialog } from "@/components/classes/confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -54,6 +55,7 @@ export function StudentsTable({
   const [currentPage, setCurrentPage] = useState(1);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [studentToEdit, setStudentToEdit] = useState<Student | null>(null);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
@@ -72,17 +74,12 @@ export function StudentsTable({
 
   const handleRemoveStudent = async () => {
     if (!studentToDelete) return;
-
     const { error } = await supabase
       .from("students")
       .delete()
       .eq("id", studentToDelete.id);
-
-    if (error) {
-      console.error("Error removing student:", error);
-    } else {
-      router.refresh();
-    }
+    if (error) console.error("Error removing student:", error);
+    else router.refresh();
   };
 
   const filteredStudents = students.filter(
@@ -119,12 +116,22 @@ export function StudentsTable({
           />
         </div>
 
-        <Button
-          onClick={handleAddClick}
-          className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat h-11 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-xl cursor-pointer px-6"
-        >
-          <UserPlus className="mr-2 h-5 w-5" /> Add Student
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setIsImportOpen(true)}
+            variant="outline"
+            className="border-[#146939] text-[#146939] hover:bg-[#e6f4ea] font-montserrat h-11 rounded-xl cursor-pointer px-4"
+          >
+            <FileUp className="mr-2 h-5 w-5" /> Import CSV
+          </Button>
+
+          <Button
+            onClick={handleAddClick}
+            className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat h-11 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-xl cursor-pointer px-6"
+          >
+            <UserPlus className="mr-2 h-5 w-5" /> Add Student
+          </Button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -137,10 +144,7 @@ export function StudentsTable({
                 </th>
                 <th className="px-6 py-4 font-bold text-[#17321A]">Name</th>
                 <th className="px-6 py-4 font-bold text-[#17321A]">Email</th>
-                <th className="px-6 py-4 font-bold text-[#17321A]">
-                  Classes
-                </th>{" "}
-                {/* New Column */}
+                <th className="px-6 py-4 font-bold text-[#17321A]">Classes</th>
                 <th className="px-6 py-4 font-bold text-[#17321A]">
                   Enrolled Date
                 </th>
@@ -186,7 +190,6 @@ export function StudentsTable({
                     <td className="px-6 py-4 text-gray-600 font-roboto">
                       {student.email || "—"}
                     </td>
-
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1 max-w-[200px]">
                         {student.enrolled_classes.length > 0 ? (
@@ -212,7 +215,6 @@ export function StudentsTable({
                         )}
                       </div>
                     </td>
-
                     <td className="px-6 py-4 text-gray-500 font-roboto">
                       {new Date(student.enrolled_at).toLocaleDateString()}
                     </td>
@@ -236,9 +238,7 @@ export function StudentsTable({
                           >
                             <Edit className="mr-2 h-4 w-4" /> Edit Profile
                           </DropdownMenuItem>
-
                           <div className="h-px bg-gray-50 my-1"></div>
-
                           <DropdownMenuItem
                             onClick={() => setStudentToDelete(student)}
                             className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 font-roboto rounded-lg"
@@ -262,7 +262,6 @@ export function StudentsTable({
               {Math.min(startIndex + ITEMS_PER_PAGE, filteredStudents.length)}{" "}
               of {filteredStudents.length} students
             </p>
-
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -273,11 +272,9 @@ export function StudentsTable({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-
               <span className="text-xs font-medium text-gray-700 px-2">
                 Page {currentPage} of {totalPages}
               </span>
-
               <Button
                 variant="outline"
                 size="sm"
@@ -299,11 +296,16 @@ export function StudentsTable({
         studentToEdit={studentToEdit}
       />
 
+      <ImportStudentsDialog
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+      />
+
       <ConfirmActionDialog
         open={!!studentToDelete}
         onOpenChange={(open) => !open && setStudentToDelete(null)}
         title="Remove Student"
-        description={`Are you sure you want to permanently remove ${studentToDelete?.full_name}? This will also delete all their enrollment records.`}
+        description={`Are you sure you want to permanently remove ${studentToDelete?.full_name}?`}
         actionLabel="Remove Student"
         variant="danger"
         onConfirm={handleRemoveStudent}
