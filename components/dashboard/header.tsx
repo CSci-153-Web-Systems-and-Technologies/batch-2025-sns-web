@@ -33,9 +33,8 @@ export function Header({ onToggle, isSidebarOpen }: HeaderProps) {
         <button
           onClick={onToggle}
           className={cn(
-            "p-2 -ml-2 rounded-md transition-all duration-200",
+            "p-2 -ml-2 rounded-md transition-all duration-200 cursor-pointer", // Kept the pointer
             "text-gray-600 hover:text-[#146939] hover:bg-[#e6f4ea] active:bg-[#d1e7dd]",
-
             isSidebarOpen && "bg-[#e6f4ea] text-[#146939]"
           )}
           aria-label="Toggle Sidebar"
@@ -57,7 +56,7 @@ export function Header({ onToggle, isSidebarOpen }: HeaderProps) {
 
           <UserCircle className="w-8 h-8 sm:w-9 sm:h-9 text-[#00954f]" />
 
-          <SignOutButton className="flex items-center justify-center p-0 w-auto h-auto bg-transparent hover:bg-red-50 text-red-500 hover:text-red-700 rounded-md transition-colors h-8 w-8 sm:h-9 sm:w-9">
+          <SignOutButton className="flex items-center justify-center p-0 w-auto h-auto bg-transparent hover:bg-red-50 text-red-500 hover:text-red-700 rounded-md transition-colors h-8 w-8 sm:h-9 sm:w-9 cursor-pointer">
             <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
           </SignOutButton>
         </div>

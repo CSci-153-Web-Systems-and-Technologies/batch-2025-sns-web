@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const [
     { count: studentsCount },
     { count: classesCount },
-    { count: pendingResultsCount },
+    { count: sentExamsCount },
     { count: examsCount },
     { data: recentExams },
   ] = await Promise.all([
@@ -24,9 +24,9 @@ export default async function DashboardPage() {
       .eq("status", "active"),
 
     supabase
-      .from("results")
+      .from("exams")
       .select("*", { count: "exact", head: true })
-      .eq("status", "pending"),
+      .eq("release_status", "released"),
 
     supabase.from("exams").select("*", { count: "exact", head: true }),
 
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
       .from("exams")
       .select("*")
       .order("date", { ascending: false })
-      .limit(4),
+      .limit(2),
   ]);
 
   return (
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
             Dashboard
           </h1>
           <p className="text-gray-500 font-roboto mt-3 text-lg max-w-md leading-relaxed">
-            Welcome back, Professor. Here is your daily overview.
+            Welcome back! Here is your daily overview.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
       <StatsOverview
         totalStudents={studentsCount || 0}
         activeClasses={classesCount || 0}
-        pendingResults={pendingResultsCount || 0}
+        sentExams={sentExamsCount || 0}
         examsManaged={examsCount || 0}
       />
 

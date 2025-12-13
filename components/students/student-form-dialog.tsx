@@ -153,7 +153,7 @@ export function StudentFormDialog({
     >
       <div
         className={cn(
-          "bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] transform flex flex-col max-h-[90vh]",
+          "bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] transform flex flex-col max-h-[90vh] mx-4",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
             : "scale-90 translate-y-8 opacity-0"
@@ -184,9 +184,9 @@ export function StudentFormDialog({
           onSubmit={onSubmit}
           className="flex-1 overflow-hidden flex flex-col"
         >
-          <div className="p-6 space-y-5 overflow-y-auto custom-scrollbar">
+          <div className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label
                     htmlFor="studentId"

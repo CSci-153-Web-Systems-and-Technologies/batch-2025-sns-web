@@ -85,7 +85,7 @@ export function ConfirmActionDialog({
     >
       <div
         className={cn(
-          "bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] transform",
+          "bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] transform mx-4",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
             : "scale-90 translate-y-8 opacity-0"

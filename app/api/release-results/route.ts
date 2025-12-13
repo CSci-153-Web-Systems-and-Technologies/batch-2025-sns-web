@@ -32,6 +32,9 @@ export async function POST(request: Request) {
       },
     });
 
+    let successCount = 0;
+    let failureCount = 0;
+
     const emailPromises = results.map(async (result) => {
       if (!result.student?.email) return null;
 
@@ -46,28 +49,43 @@ export async function POST(request: Request) {
       );
 
       try {
-        await transporter.sendMail({
-          from: '"SNS Teacher Portal" <' + process.env.GMAIL_USER + ">",
+        const info = await transporter.sendMail({
+          from: `"SNS Portal" <${process.env.GMAIL_USER}>`,
           to: result.student.email,
           subject: `Exam Results: ${exam.name}`,
           html: emailHtml,
         });
+        console.log(`[Email Sent] Message ID: ${info.messageId}`);
+        successCount++;
         return true;
       } catch (err) {
-        console.error(`Failed to send to ${result.student.email}`, err);
+        console.error(`[Email Failed] To: ${result.student.email}`, err);
+        failureCount++;
         return null;
       }
     });
 
     await Promise.all(emailPromises);
 
-    await supabase
-      .from("exams")
-      .update({ release_status: "released", auto_release: false })
-      .eq("id", examId);
+    if (successCount > 0) {
+      await supabase
+        .from("exams")
+        .update({ release_status: "released", auto_release: false })
+        .eq("id", examId);
 
-    return NextResponse.json({ success: true });
+      return NextResponse.json({
+        success: true,
+        sent: successCount,
+        failed: failureCount,
+      });
+    } else {
+      return NextResponse.json(
+        { error: "Failed to send any emails. Check server logs." },
+        { status: 500 }
+      );
+    }
   } catch (error: any) {
+    console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

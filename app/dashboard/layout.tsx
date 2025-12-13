@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 import { cn } from "@/lib/utils";
@@ -10,24 +10,45 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  useEffect(() => {
+    setIsMounted(true);
+    const savedState = localStorage.getItem("sidebarOpen");
+    if (savedState !== null) {
+      setIsSidebarOpen(JSON.parse(savedState));
+    }
+  }, []);
+
+  const setSidebarState = (value: boolean | ((prev: boolean) => boolean)) => {
+    setIsSidebarOpen((prev) => {
+      const newState = typeof value === "function" ? value(prev) : value;
+      localStorage.setItem("sidebarOpen", JSON.stringify(newState));
+      return newState;
+    });
+  };
+
+  const toggleSidebar = () => setSidebarState((prev) => !prev);
+
+  if (!isMounted) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-roboto">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+    <div className="min-h-screen bg-gray-50 flex font-sans text-gray-900">
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setSidebarState} />
 
       <div
         className={cn(
-          "flex-1 flex flex-col transition-all duration-300 ease-in-out",
+          "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out",
 
-          isSidebarOpen ? "md:ml-64" : "md:ml-0"
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         )}
       >
         <Header onToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">
+          <div className="max-w-7xl mx-auto w-full">{children}</div>
+        </main>
       </div>
     </div>
   );

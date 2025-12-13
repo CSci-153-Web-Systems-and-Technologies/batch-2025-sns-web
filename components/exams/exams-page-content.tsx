@@ -9,6 +9,9 @@ import {
   Edit,
   Trash2,
   ClipboardList,
+  Target,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
 import {
   Card,
@@ -30,13 +33,14 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/toast-notification";
 
 interface ExamItem {
   id: string;
   name: string;
   class_code: string;
   date: string;
+  total_score?: number;
+  release_status?: "draft" | "released";
 }
 
 interface ClassItem {
@@ -60,23 +64,19 @@ export function ExamsPageContent({
 
   const supabase = createClient();
   const router = useRouter();
-  const { addToast } = useToast();
 
   const handleDeleteExam = async () => {
     if (!examToDelete) return;
+
+    await supabase.from("results").delete().eq("exam_id", examToDelete.id);
 
     const { error } = await supabase
       .from("exams")
       .delete()
       .eq("id", examToDelete.id);
 
-    if (error) {
-      console.error("Error deleting exam:", error);
-      addToast("Failed to delete exam.", "error");
-    } else {
-      addToast("Exam deleted successfully.", "success");
-      router.refresh();
-    }
+    if (error) console.error("Error deleting exam:", error);
+    else router.refresh();
   };
 
   return (
@@ -101,77 +101,111 @@ export function ExamsPageContent({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {exams.map((exam) => (
-          <Card
-            key={exam.id}
-            className="group relative border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white overflow-hidden hover:-translate-y-2 rounded-2xl flex flex-col justify-between"
-          >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#146939] to-[#00954f] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        {exams.map((exam) => {
+          const isReleased = exam.release_status === "released";
 
-            <CardHeader className="flex flex-row items-start justify-between pb-3">
-              <div>
-                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#e6f4ea] text-[#146939] border border-[#146939]/10">
-                  {exam.class_code}
-                </span>
-                <CardTitle
-                  className="text-xl font-bold text-[#17321A] font-montserrat mt-2 line-clamp-1"
-                  title={exam.name}
-                >
-                  {exam.name}
-                </CardTitle>
-              </div>
+          return (
+            <Card
+              key={exam.id}
+              className="group relative border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white overflow-hidden hover:-translate-y-2 rounded-2xl flex flex-col justify-between"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#146939] to-[#00954f] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-[#17321A] hover:bg-[#e6f4ea] rounded-lg transition-colors cursor-pointer"
+              <CardHeader className="flex flex-row items-start justify-between pb-3">
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#e6f4ea] text-[#146939] border border-[#146939]/10">
+                      {exam.class_code}
+                    </span>
+
+                    <span
+                      className={cn(
+                        "px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1",
+                        isReleased
+                          ? "bg-[#e6f4ea] text-[#146939] border-[#146939]/10"
+                          : "bg-gray-100 text-gray-500 border-gray-200"
+                      )}
+                    >
+                      {isReleased ? (
+                        <>
+                          <CheckCircle className="h-3 w-3" /> Released
+                        </>
+                      ) : (
+                        <>
+                          <Clock className="h-3 w-3" /> Draft
+                        </>
+                      )}
+                    </span>
+                  </div>
+
+                  <CardTitle
+                    className="text-xl font-bold text-[#17321A] font-montserrat line-clamp-1"
+                    title={exam.name}
                   >
-                    <MoreVertical className="h-4 w-4" />
+                    {exam.name}
+                  </CardTitle>
+                </div>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0 text-gray-400 hover:text-[#17321A] hover:bg-[#e6f4ea] rounded-lg transition-colors cursor-pointer"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="rounded-xl border-gray-100 shadow-lg p-1"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => setExamToEdit(exam)}
+                      className="cursor-pointer font-roboto text-gray-600 focus:text-[#146939] focus:bg-[#e6f4ea] rounded-lg"
+                    >
+                      <Edit className="mr-2 h-4 w-4" /> Edit Details
+                    </DropdownMenuItem>
+                    <div className="h-px bg-gray-50 my-1"></div>
+                    <DropdownMenuItem
+                      onClick={() => setExamToDelete(exam)}
+                      className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 font-roboto rounded-lg"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardHeader>
+
+              <CardContent className="space-y-3 pb-3">
+                <div className="flex items-center text-sm text-gray-600 font-roboto">
+                  <Calendar className="mr-2 h-4 w-4 text-[#146939]" />
+                  {new Date(exam.date).toLocaleDateString(undefined, {
+                    weekday: "long",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
+
+                <div className="flex items-center text-sm text-gray-600 font-roboto">
+                  <Target className="mr-2 h-4 w-4 text-[#146939]" />
+                  Total Score:{" "}
+                  <span className="font-bold ml-1 text-[#17321A]">
+                    {exam.total_score || 100}
+                  </span>
+                </div>
+              </CardContent>
+
+              <CardFooter className="pt-4 border-t border-gray-50 mt-4 bg-gray-50/30 flex gap-2">
+                <Link href={`/dashboard/results/${exam.id}`} className="w-full">
+                  <Button className="w-full bg-[#146939] hover:bg-[#00954f] text-white font-montserrat text-xs font-bold rounded-xl h-10 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                    <ClipboardList className="mr-2 h-4 w-4" /> Input Scores
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="rounded-xl border-gray-100 shadow-lg p-1"
-                >
-                  <DropdownMenuItem
-                    onClick={() => setExamToEdit(exam)}
-                    className="cursor-pointer font-roboto text-gray-600 focus:text-[#146939] focus:bg-[#e6f4ea] rounded-lg"
-                  >
-                    <Edit className="mr-2 h-4 w-4" /> Edit Details
-                  </DropdownMenuItem>
-                  <div className="h-px bg-gray-50 my-1"></div>
-                  <DropdownMenuItem
-                    onClick={() => setExamToDelete(exam)}
-                    className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 font-roboto rounded-lg"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </CardHeader>
-
-            <CardContent className="space-y-3 pb-3">
-              <div className="flex items-center text-sm text-gray-600 font-roboto">
-                <Calendar className="mr-2 h-4 w-4 text-[#146939]" />
-                {new Date(exam.date).toLocaleDateString(undefined, {
-                  weekday: "long",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </div>
-            </CardContent>
-
-            <CardFooter className="pt-4 border-t border-gray-50 mt-4 bg-gray-50/30 flex gap-2">
-              <Link href={`/dashboard/results/${exam.id}`} className="w-full">
-                <Button className="w-full bg-[#146939] hover:bg-[#00954f] text-white font-montserrat text-xs font-bold rounded-xl h-10 shadow-md hover:shadow-lg transition-all cursor-pointer">
-                  <ClipboardList className="mr-2 h-4 w-4" /> Input Scores
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
+                </Link>
+              </CardFooter>
+            </Card>
+          );
+        })}
 
         <button
           onClick={() => setIsCreateOpen(true)}

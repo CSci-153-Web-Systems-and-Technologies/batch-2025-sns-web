@@ -1,132 +1,157 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
-  GraduationCap,
-  FileSpreadsheet,
-  LogOut,
   BookOpen,
+  FileText,
+  BarChart2,
+  LogOut,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/components/dashboard/sign-out-button";
-
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "My Classes", href: "/dashboard/classes", icon: BookOpen },
-  { label: "Students", href: "/dashboard/students", icon: Users },
-  { label: "Exams", href: "/dashboard/exams", icon: GraduationCap },
-  { label: "Send Results", href: "/dashboard/results", icon: FileSpreadsheet },
-];
 
 interface SidebarProps {
   isOpen: boolean;
-  onClose: () => void;
+  setIsOpen: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
 
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-    }
-
-    router.push("/login");
-    router.refresh();
-  };
+  const links = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/students", label: "Students", icon: Users },
+    { href: "/dashboard/classes", label: "Classes", icon: BookOpen },
+    { href: "/dashboard/exams", label: "Exams", icon: FileText },
+    { href: "/dashboard/results", label: "Send Results", icon: BarChart2 },
+  ];
 
   return (
     <>
       <div
         className={cn(
-          "fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm transition-opacity duration-300",
+          "fixed inset-0 z-30 bg-black/30 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
           isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         )}
-        onClick={onClose}
+        onClick={() => setIsOpen(false)}
       />
 
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 bg-gradient-to-b from-[#146939] to-[#17321A] text-white transition-transform duration-300 ease-in-out flex flex-col shadow-2xl border-r border-[#146939]",
+          "fixed inset-y-0 left-0 z-40 bg-[#17321A] text-white transition-all duration-300 ease-in-out shadow-xl flex flex-col overflow-hidden",
 
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "w-64",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+
+          "lg:translate-x-0",
+          !isOpen && "lg:w-20"
         )}
       >
-        <div className="p-8 border-b border-[#146939]/50 flex flex-col items-center justify-center relative overflow-hidden group">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-[#00954f] rounded-full opacity-10 blur-3xl group-hover:opacity-20 transition-opacity duration-700"></div>
-
-          <div className="relative z-10 flex flex-col items-center gap-3">
-            <div className="p-3 bg-[#146939]/30 rounded-2xl border border-[#146939] shadow-inner group-hover:scale-105 transition-transform duration-300">
-              <LayoutDashboard className="h-8 w-8 text-[#00954f]" />
-            </div>
-            <div className="text-center">
-              <h1 className="font-trajan text-3xl font-bold tracking-[0.15em] text-white leading-tight">
-                SNS
-              </h1>
-              <p className="text-[10px] text-[#00954f] font-montserrat uppercase tracking-[0.25em] font-bold mt-1">
-                Teacher Portal
-              </p>
-            </div>
+        <div className="h-16 flex items-center justify-center border-b border-[#146939]/30 gap-2 overflow-hidden shrink-0">
+          <LayoutDashboard className="h-6 w-6 text-[#4ade80] shrink-0" />
+          <div
+            className={cn(
+              "font-montserrat font-bold text-xl transition-all duration-300 whitespace-nowrap overflow-hidden",
+              isOpen ? "w-auto opacity-100" : "w-0 opacity-0 hidden"
+            )}
+          >
+            SNS
           </div>
         </div>
 
-        <nav className="flex-1 py-8 px-4 space-y-2 overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
+        <nav className="flex-1 py-6 px-3 space-y-2 overflow-hidden">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname === link.href;
+
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={link.href}
+                href={link.href}
                 onClick={() => {
-                  if (window.innerWidth < 768) {
-                    onClose();
+                  if (window.innerWidth < 1024) {
+                    setIsOpen(false);
                   }
                 }}
                 className={cn(
-                  "flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 group font-montserrat relative cursor-pointer overflow-hidden",
-
-                  "hover:-translate-y-0.5 hover:translate-x-1 hover:shadow-lg",
+                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                   isActive
-                    ? "bg-gradient-to-r from-[#00954f] to-[#146939] text-white shadow-md shadow-[#00954f]/20"
-                    : "text-gray-400 hover:bg-[#146939]/40 hover:text-white"
+                    ? "bg-[#146939] text-white shadow-md"
+                    : "text-gray-300 hover:bg-[#146939]/50 hover:text-white",
+                  !isOpen && "justify-center"
                 )}
               >
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white/30 rounded-r-full" />
-                )}
-
-                <item.icon
+                <Icon
                   className={cn(
-                    "mr-3 h-5 w-5 transition-transform duration-300 group-hover:scale-110",
-                    isActive
-                      ? "text-white"
-                      : "text-gray-500 group-hover:text-[#00954f]"
+                    "h-5 w-5 shrink-0 transition-transform",
+                    !isOpen && "mx-auto"
                   )}
                 />
-                <span className="relative z-10">{item.label}</span>
+
+                <span
+                  className={cn(
+                    "font-montserrat font-medium whitespace-nowrap transition-all duration-300",
+
+                    isOpen
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-4 absolute left-14 hidden lg:block pointer-events-none"
+                  )}
+                >
+                  {link.label}
+                </span>
+
+                {!isOpen && (
+                  <div
+                    className={cn(
+                      "absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 pointer-events-none transition-opacity z-50 whitespace-nowrap hidden",
+
+                      "lg:group-hover:opacity-100 lg:group-hover:block lg:block"
+                    )}
+                  >
+                    {link.label}
+                  </div>
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-[#146939]/50 bg-[#146939]/10">
-          <div className="mt-auto pt-6 border-t border-gray-100">
-            <SignOutButton />
-          </div>
-          <p className="text-[10px] text-white text-center mt-3 font-roboto opacity-60">
-            © CSci 153 - 2025 - Jonhei Akiu Lacre
-          </p>
+        <div className="p-4 border-t border-[#146939]/30 overflow-hidden shrink-0">
+          <SignOutButton
+            className={cn(
+              "text-gray-300 hover:bg-[#146939]/50 hover:text-white justify-start w-full",
+              !isOpen && "justify-center px-0"
+            )}
+          >
+            {!isOpen ? <LogOutIconOnly /> : null}
+          </SignOutButton>
         </div>
       </aside>
     </>
+  );
+}
+
+function LogOutIconOnly() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" x2="9" y1="12" y2="12" />
+    </svg>
   );
 }

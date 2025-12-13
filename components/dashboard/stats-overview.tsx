@@ -1,17 +1,17 @@
-import { Users, FileWarning, GraduationCap } from "lucide-react";
+import { Users, Send, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface StatsOverviewProps {
   totalStudents: number;
   activeClasses: number;
-  pendingResults: number;
+  sentExams: number;
   examsManaged: number;
 }
 
 export function StatsOverview({
   totalStudents,
   activeClasses,
-  pendingResults,
+  sentExams,
   examsManaged,
 }: StatsOverviewProps) {
   const stats = [
@@ -24,18 +24,18 @@ export function StatsOverview({
       bg: "bg-[#e6f4ea]",
     },
     {
-      title: "Pending Results",
-      value: pendingResults.toString(),
-      description: "From recent assessments",
-      icon: FileWarning,
-      color: "text-[#00954f]",
+      title: "Sent Results",
+      value: sentExams.toString(),
+      description: "Total exams released to students",
+      icon: Send,
+      color: "text-[#17321A]",
       bg: "bg-[#e6f4ea]",
     },
     {
       title: "Exams Managed",
       value: examsManaged.toString(),
       description: "Scheduled and active exams",
-      icon: GraduationCap,
+      icon: FileText,
       color: "text-[#17321A]",
       bg: "bg-[#e6f4ea]",
     },
