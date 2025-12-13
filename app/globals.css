@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-montserrat: var(--font-montserrat);
+  --font-roboto: var(--font-roboto);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --background: hsl(0 0% 100%);
+
+  --foreground: hsl(127 39% 14%);
+
+  --primary: hsl(146 68% 25%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  --secondary: hsl(145 80% 96%);
+  --secondary-foreground: hsl(146 68% 25%);
+
+  --accent: hsl(152 100% 29%);
+  --accent-foreground: hsl(0 0% 100%);
+
+  --ring: hsl(152 100% 29%);
+
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+}
+
+.dark {
+  --background: hsl(127 39% 10%);
+  --foreground: hsl(210 40% 98%);
+
+  --primary: hsl(152 100% 29%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  --secondary: hsl(146 68% 25%);
+  --secondary-foreground: hsl(210 40% 98%);
+
+  --muted: hsl(127 30% 15%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+
+  --accent: hsl(146 68% 25%);
+  --accent-foreground: hsl(210 40% 98%);
+
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  --border: hsl(127 30% 20%);
+  --input: hsl(127 30% 20%);
+  --ring: hsl(152 100% 29%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-roboto;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-montserrat;
+  }
+}
