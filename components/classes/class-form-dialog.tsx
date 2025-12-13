@@ -93,7 +93,7 @@ export function ClassFormDialog({
     >
       <div
         className={cn(
-          "bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
+          "bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
             : "scale-95 translate-y-4 opacity-0"
@@ -135,7 +135,7 @@ export function ClassFormDialog({
                 defaultValue={classToEdit?.name}
                 placeholder="e.g. Advanced Chemistry"
                 required
-                className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11 bg-gray-50/50"
+                className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11 bg-gray-50/50 rounded-lg"
               />
             </div>
 
@@ -152,7 +152,7 @@ export function ClassFormDialog({
                 defaultValue={classToEdit?.code}
                 placeholder="e.g. CHEM-301"
                 required
-                className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11 bg-gray-50/50"
+                className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11 bg-gray-50/50 rounded-lg"
               />
             </div>
           </div>
@@ -162,14 +162,14 @@ export function ClassFormDialog({
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}
-              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat h-11 px-6 cursor-pointer"
+              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat h-11 px-6 cursor-pointer rounded-xl"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[140px] h-11 shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[140px] h-11 shadow-md hover:shadow-lg transition-all cursor-pointer rounded-xl"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
