@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PlusCircle, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function CreateClassDialog({
   open,
@@ -16,8 +17,29 @@ export function CreateClassDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [loading, setLoading] = useState(false);
+
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const router = useRouter();
   const supabase = createClient();
+
+  useEffect(() => {
+    if (open) {
+      setIsMounted(true);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+    } else {
+      setIsVisible(false);
+
+      const timer = setTimeout(() => setIsMounted(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,7 +49,6 @@ export function CreateClassDialog({
     const name = formData.get("name") as string;
     const code = formData.get("code") as string;
 
-    // Insert into Supabase
     const { error } = await supabase
       .from("classes")
       .insert({ name, code, status: "active" });
@@ -42,29 +63,44 @@ export function CreateClassDialog({
     }
   }
 
-  if (!open) return null;
+  if (!isMounted) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200 relative">
-        <div className="bg-[#17321A] p-6 text-white flex justify-between items-center">
-          <div>
+    <div
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+        isVisible ? "opacity-100" : "opacity-0"
+      )}
+    >
+      <div
+        className={cn(
+          "bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
+
+          isVisible
+            ? "scale-100 translate-y-0 opacity-100"
+            : "scale-95 translate-y-4 opacity-0"
+        )}
+      >
+        <div className="bg-gradient-to-b from-[#146939] to-[#17321A] p-6 text-white flex justify-between items-center relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00954f] rounded-full opacity-20 blur-2xl pointer-events-none"></div>
+
+          <div className="relative z-10">
             <h2 className="text-xl font-bold font-montserrat">
               Create New Class
             </h2>
-            <p className="text-xs text-gray-300 font-roboto mt-1">
+            <p className="text-xs text-gray-200 font-roboto mt-1 opacity-80">
               Add a new course to your curriculum.
             </p>
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="text-white/70 hover:text-white hover:bg-white/10 p-1 rounded-full transition-colors"
+            className="text-white/70 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors relative z-10 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="p-6 space-y-4">
+        <form onSubmit={onSubmit} className="p-6 space-y-5">
           <div className="space-y-2">
             <Label
               htmlFor="name"
@@ -77,7 +113,7 @@ export function CreateClassDialog({
               name="name"
               placeholder="e.g. Advanced Chemistry"
               required
-              className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f]"
+              className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11"
             />
           </div>
 
@@ -93,7 +129,7 @@ export function CreateClassDialog({
               name="code"
               placeholder="e.g. CHEM-301"
               required
-              className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f]"
+              className="border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] h-11"
             />
           </div>
 
@@ -102,14 +138,14 @@ export function CreateClassDialog({
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}
-              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat"
+              className="text-gray-500 hover:text-[#17321A] hover:bg-gray-100 font-montserrat h-11 px-6"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[120px]"
+              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat min-w-[140px] h-11 shadow-lg hover:shadow-xl transition-all"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />

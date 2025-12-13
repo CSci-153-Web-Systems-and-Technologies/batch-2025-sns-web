@@ -6,8 +6,6 @@ import {
   Users,
   ArrowRight,
   MoreVertical,
-  Calendar,
-  Trash2,
   Edit,
   UserPlus,
   Archive,
@@ -105,14 +103,10 @@ export function ClassesGrid({ classes }: ClassesGridProps) {
             </CardHeader>
 
             <CardContent className="py-4">
-              <div className="flex items-center justify-between text-sm text-gray-500 font-roboto">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center text-sm text-gray-500 font-roboto">
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
                   <Users className="h-4 w-4 text-[#00954f]" />
                   <span>{cls.student_count || 0} Students</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span>Fall 2024</span>
                 </div>
               </div>
             </CardContent>
