@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -11,6 +11,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -22,6 +23,18 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+    }
+
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full md:translate-x-0 bg-[#17321A] text-white transition-transform duration-300 flex flex-col">
@@ -42,7 +55,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 group font-montserrat",
+                "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 group font-montserrat cursor-pointer",
                 isActive
                   ? "bg-[#00954f] text-white shadow-md"
                   : "text-gray-300 hover:bg-[#146939] hover:text-white"
@@ -63,7 +76,10 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-[#146939]">
-        <button className="flex w-full items-center px-4 py-3 text-sm font-medium text-red-300 hover:bg-red-900/30 hover:text-red-200 rounded-lg transition-colors font-montserrat">
+        <button
+          onClick={handleSignOut}
+          className="flex w-full items-center px-4 py-3 text-sm font-medium text-red-300 hover:bg-red-900/30 hover:text-red-200 rounded-lg transition-colors font-montserrat cursor-pointer"
+        >
           <LogOut className="mr-3 h-5 w-5" />
           Sign Out
         </button>
