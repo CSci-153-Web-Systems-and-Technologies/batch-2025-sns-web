@@ -21,6 +21,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast-notification";
 
 interface Exam {
   id: string;
@@ -45,6 +46,7 @@ export function ExamReleaseCard({
 
   const supabase = createClient();
   const router = useRouter();
+  const { addToast } = useToast();
   const isReleased = exam.release_status === "released";
 
   const isFullyGraded = exam.student_count >= exam.total_students;
@@ -53,26 +55,30 @@ export function ExamReleaseCard({
     if (disabled || isReleased) return;
     if (
       !confirm(
-        `Are you sure you want to release scores for "${exam.name}"? Emails will be sent immediately.`
+        `Are you sure you want to release scores for "${exam.name}"? This will email ${exam.student_count} students immediately.`
       )
     )
       return;
 
     setLoadingBtn(true);
 
-    const { error } = await supabase
-      .from("exams")
-      .update({
-        release_status: "released",
-      })
-      .eq("id", exam.id);
+    try {
+      const response = await fetch("/api/release-results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ examId: exam.id }),
+      });
 
-    if (error) {
-      console.error("Error releasing results:", error);
-    } else {
+      if (!response.ok) throw new Error("Failed to send emails");
+
+      addToast("Emails sent and results released successfully.", "success");
       router.refresh();
+    } catch (error) {
+      console.error("Error releasing results:", error);
+      addToast("Failed to send results. Please try again.", "error");
+    } finally {
+      setLoadingBtn(false);
     }
-    setLoadingBtn(false);
   };
 
   return (

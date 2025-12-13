@@ -113,28 +113,33 @@ export function InputScoresContent({
     const filledScores = Object.values(scores).filter((s) => s !== "").length;
     if (
       !confirm(
-        `Are you sure you want to release these results? \n\n${filledScores} students will receive their scores immediately.`
+        `Are you sure you want to release these results? \n\n${filledScores} students will receive their scores via email immediately.`
       )
     )
       return;
 
     setReleasing(true);
+
     await handleSave();
 
-    const { error } = await supabase
-      .from("exams")
-      .update({ release_status: "released", auto_release: false })
-      .eq("id", exam.id);
+    try {
+      const response = await fetch("/api/release-results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ examId: exam.id }),
+      });
 
-    if (error) {
-      console.error("Error releasing:", error);
-      addToast("Failed to release results.", "error");
-    } else {
-      addToast("Results released successfully.", "success");
+      if (!response.ok) throw new Error("Failed to send emails");
+
+      addToast("Results released and emails sent successfully!", "success");
       setIsReleased(true);
       router.refresh();
+    } catch (error) {
+      console.error("Error releasing:", error);
+      addToast("Failed to release results. Check console.", "error");
+    } finally {
+      setReleasing(false);
     }
-    setReleasing(false);
   };
 
   return (
@@ -210,7 +215,6 @@ export function InputScoresContent({
       <Card className="rounded-2xl border-gray-100 shadow-sm overflow-hidden bg-white">
         <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex justify-between text-xs font-bold text-gray-500 uppercase tracking-wider font-montserrat">
           <span>Student List ({students.length})</span>
-
           <span className="pr-8">Score (0 - {maxScore})</span>
         </div>
 
