@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { ClassFormDialog } from "./class-form-dialog";
 import { ManageStudentsDialog } from "./manage-students-dialog";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
+import { ExamFormDialog } from "@/components/exams/exam-form-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -55,6 +56,7 @@ export function ClassDetailsContent({
   const [search, setSearch] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
+  const [isExamOpen, setIsExamOpen] = useState(false); // New state for Exam Dialog
 
   const [studentToRemove, setStudentToRemove] = useState<Student | null>(null);
 
@@ -123,12 +125,15 @@ export function ClassDetailsContent({
             >
               <Settings className="mr-2 h-4 w-4" /> Class Settings
             </Button>
-            <Button className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat rounded-xl h-11 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer">
+
+            <Button
+              onClick={() => setIsExamOpen(true)}
+              className="bg-[#146939] hover:bg-[#00954f] text-white font-montserrat rounded-xl h-11 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
+            >
               <FileText className="mr-2 h-4 w-4" /> Create Exam
             </Button>
           </div>
         </div>
-
         <div className="h-px w-full bg-gray-200 mt-6"></div>
       </div>
 
@@ -159,7 +164,6 @@ export function ClassDetailsContent({
                   className="pl-9 h-10 bg-gray-50 border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] rounded-xl"
                 />
               </div>
-
               <Button
                 onClick={() => setIsManageOpen(true)}
                 className="bg-[#146939] hover:bg-[#00954f] text-white rounded-xl h-10 px-4 font-montserrat text-xs shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
@@ -211,7 +215,6 @@ export function ClassDetailsContent({
                           </p>
                         </div>
                       </div>
-
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -260,6 +263,13 @@ export function ClassDetailsContent({
         classId={classData.id}
         className={classData.name}
         allStudents={allStudents}
+      />
+
+      <ExamFormDialog
+        open={isExamOpen}
+        onOpenChange={setIsExamOpen}
+        availableClasses={[classData]}
+        defaultClassCode={classData.code}
       />
 
       <ConfirmActionDialog

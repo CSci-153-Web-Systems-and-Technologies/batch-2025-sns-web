@@ -3,14 +3,11 @@
 import { useState } from "react";
 import {
   Calendar,
-  Clock,
   FileText,
-  CheckCircle,
   MoreVertical,
   PlusCircle,
   Edit,
   Trash2,
-  Archive,
 } from "lucide-react";
 import {
   Card,
@@ -30,14 +27,12 @@ import { ExamFormDialog } from "./exam-form-dialog";
 import { ConfirmActionDialog } from "@/components/classes/confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 interface ExamItem {
   id: string;
   name: string;
   class_code: string;
   date: string;
-  status: string;
 }
 
 interface ClassItem {
@@ -70,15 +65,8 @@ export function ExamsPageContent({
       .delete()
       .eq("id", examToDelete.id);
 
-    if (error) {
-      console.error("Error deleting exam:", error);
-    } else {
-      router.refresh();
-    }
-  };
-
-  const handleEditClick = (exam: ExamItem) => {
-    setExamToEdit(exam);
+    if (error) console.error("Error deleting exam:", error);
+    else router.refresh();
   };
 
   return (
@@ -89,7 +77,7 @@ export function ExamsPageContent({
             Exams
           </h1>
           <p className="text-gray-500 font-roboto mt-3 text-lg">
-            Create and schedule assessments for your classes.
+            Create and schedule assessments.
           </p>
         </div>
 
@@ -137,7 +125,7 @@ export function ExamsPageContent({
                   className="rounded-xl border-gray-100 shadow-lg p-1"
                 >
                   <DropdownMenuItem
-                    onClick={() => handleEditClick(exam)}
+                    onClick={() => setExamToEdit(exam)}
                     className="cursor-pointer font-roboto text-gray-600 focus:text-[#146939] focus:bg-[#e6f4ea] rounded-lg"
                   >
                     <Edit className="mr-2 h-4 w-4" /> Edit Exam
@@ -163,33 +151,15 @@ export function ExamsPageContent({
                   year: "numeric",
                 })}
               </div>
-
-              <div className="flex items-center text-sm text-gray-400 font-roboto">
-                <Clock className="mr-2 h-4 w-4 opacity-50" />
-                <span>Time TBD</span>
-              </div>
             </CardContent>
 
             <CardFooter className="pt-4 border-t border-gray-50 mt-4 bg-gray-50/30 flex justify-between items-center">
-              <span
-                className={cn(
-                  "text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5",
-                  exam.status === "Published"
-                    ? "text-[#146939] bg-[#e6f4ea]"
-                    : exam.status === "Draft"
-                    ? "text-gray-600 bg-gray-200"
-                    : "text-blue-600 bg-blue-50"
-                )}
-              >
-                {exam.status === "Published" && (
-                  <CheckCircle className="h-3 w-3" />
-                )}
-                {exam.status}
+              <span className="text-xs text-gray-400 font-medium font-roboto">
+                Scheduled
               </span>
-
               <Button
                 variant="ghost"
-                onClick={() => handleEditClick(exam)}
+                onClick={() => setExamToEdit(exam)}
                 className="text-[#146939] hover:text-[#00954f] hover:bg-[#e6f4ea] font-montserrat text-xs font-bold rounded-xl h-8 px-3 transition-all cursor-pointer"
               >
                 Manage
@@ -232,7 +202,7 @@ export function ExamsPageContent({
         open={!!examToDelete}
         onOpenChange={(open) => !open && setExamToDelete(null)}
         title="Delete Exam"
-        description={`Are you sure you want to delete "${examToDelete?.name}"? This action cannot be undone and will remove all associated results.`}
+        description={`Are you sure you want to delete "${examToDelete?.name}"?`}
         actionLabel="Delete Exam"
         variant="danger"
         onConfirm={handleDeleteExam}
