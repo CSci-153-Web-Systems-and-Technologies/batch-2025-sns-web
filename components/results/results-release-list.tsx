@@ -10,6 +10,7 @@ interface Exam {
   date: string;
   release_status: "draft" | "released";
   student_count: number;
+  total_students: number;
 }
 
 export function ResultsReleaseList({ exams }: { exams: Exam[] }) {

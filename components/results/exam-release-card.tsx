@@ -21,7 +21,6 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/toast-notification";
 
 interface Exam {
   id: string;
@@ -30,6 +29,7 @@ interface Exam {
   date: string;
   release_status: "draft" | "released";
   student_count: number;
+  total_students: number;
 }
 
 interface ExamReleaseCardProps {
@@ -45,14 +45,15 @@ export function ExamReleaseCard({
 
   const supabase = createClient();
   const router = useRouter();
-  const { addToast } = useToast();
   const isReleased = exam.release_status === "released";
+
+  const isFullyGraded = exam.student_count >= exam.total_students;
 
   const handleReleaseNow = async () => {
     if (disabled || isReleased) return;
     if (
       !confirm(
-        `Are you sure you want to release scores for "${exam.name}" to ${exam.student_count} students? Emails will be sent immediately.`
+        `Are you sure you want to release scores for "${exam.name}"? Emails will be sent immediately.`
       )
     )
       return;
@@ -68,9 +69,7 @@ export function ExamReleaseCard({
 
     if (error) {
       console.error("Error releasing results:", error);
-      addToast("Failed to release results.", "error");
     } else {
-      addToast("Exam results released successfully.", "success");
       router.refresh();
     }
     setLoadingBtn(false);
@@ -124,11 +123,21 @@ export function ExamReleaseCard({
             day: "numeric",
           })}
         </div>
+
         <div className="flex items-center text-sm font-roboto font-medium">
           <Users className="mr-2 h-4 w-4 text-[#146939]" />
           <span>
-            {exam.student_count}{" "}
-            {exam.student_count === 1 ? "Student" : "Students"} graded
+            <span
+              className={cn(
+                isFullyGraded
+                  ? "text-[#146939] font-bold"
+                  : "text-amber-600 font-bold"
+              )}
+            >
+              {exam.student_count}
+            </span>
+            <span className="text-gray-400 mx-1">/</span>
+            <span>{exam.total_students} students graded</span>
           </span>
         </div>
       </CardContent>
