@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Save,
@@ -34,6 +34,7 @@ interface Exam {
   date: string;
   release_status: "draft" | "released";
   class_id?: string;
+  total_score?: number;
 }
 
 interface InputScoresContentProps {
@@ -49,14 +50,7 @@ export function InputScoresContent({
   allStudents,
   classId,
 }: InputScoresContentProps) {
-  const [scores, setScores] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    students.forEach((s) => {
-      initial[s.id] =
-        s.score !== null && s.score !== undefined ? s.score.toString() : "";
-    });
-    return initial;
-  });
+  const [scores, setScores] = useState<Record<string, string>>({});
 
   const [saving, setSaving] = useState(false);
   const [releasing, setReleasing] = useState(false);
@@ -69,9 +63,26 @@ export function InputScoresContent({
   const router = useRouter();
   const { addToast } = useToast();
 
+  const maxScore = exam.total_score || 100;
+
+  useEffect(() => {
+    setScores((prevScores) => {
+      const newScores: Record<string, string> = {};
+      students.forEach((s) => {
+        if (prevScores[s.id] !== undefined) {
+          newScores[s.id] = prevScores[s.id];
+        } else {
+          newScores[s.id] =
+            s.score !== null && s.score !== undefined ? s.score.toString() : "";
+        }
+      });
+      return newScores;
+    });
+  }, [students]);
+
   const handleScoreChange = (studentId: string, val: string) => {
     if (val === "" || /^\d+$/.test(val)) {
-      if (val !== "" && parseInt(val) > 100) return;
+      if (val !== "" && parseInt(val) > maxScore) return;
       setScores((prev) => ({ ...prev, [studentId]: val }));
     }
   };
@@ -199,7 +210,8 @@ export function InputScoresContent({
       <Card className="rounded-2xl border-gray-100 shadow-sm overflow-hidden bg-white">
         <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex justify-between text-xs font-bold text-gray-500 uppercase tracking-wider font-montserrat">
           <span>Student List ({students.length})</span>
-          <span className="pr-8">Score (0-100)</span>
+
+          <span className="pr-8">Score (0 - {maxScore})</span>
         </div>
 
         <div className="divide-y divide-gray-50 max-h-[60vh] overflow-y-auto custom-scrollbar">
@@ -242,7 +254,7 @@ export function InputScoresContent({
                   <Input
                     type="number"
                     min="0"
-                    max="100"
+                    max={maxScore}
                     disabled={isReleased}
                     placeholder="-"
                     value={scores[student.id] || ""}
@@ -271,6 +283,7 @@ export function InputScoresContent({
         allStudents={allStudents}
         title="Add Students"
         actionLabel="Add"
+        onDataChange={() => router.refresh()}
       />
     </div>
   );

@@ -39,14 +39,10 @@ export function ClassFormDialog({
   useEffect(() => {
     if (open) {
       setIsMounted(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsVisible(true);
-        });
-      });
+      requestAnimationFrame(() => setIsVisible(true));
     } else {
       setIsVisible(false);
-      const timer = setTimeout(() => setIsMounted(false), 300);
+      const timer = setTimeout(() => setIsMounted(false), 500);
       return () => clearTimeout(timer);
     }
   }, [open]);
@@ -96,16 +92,16 @@ export function ClassFormDialog({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-500 ease-in-out",
         isVisible ? "opacity-100" : "opacity-0"
       )}
     >
       <div
         className={cn(
-          "bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
+          "bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
-            : "scale-95 translate-y-4 opacity-0"
+            : "scale-90 translate-y-8 opacity-0"
         )}
       >
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#146939] to-[#00954f]"></div>

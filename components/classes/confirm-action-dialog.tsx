@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  RefreshCcw,
-  Archive,
-  X,
-  Loader2,
-  Trash2,
-  AlertTriangle,
-} from "lucide-react";
+import { RefreshCcw, Archive, X, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -38,14 +31,10 @@ export function ConfirmActionDialog({
   useEffect(() => {
     if (open) {
       setIsMounted(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsVisible(true);
-        });
-      });
+      requestAnimationFrame(() => setIsVisible(true));
     } else {
       setIsVisible(false);
-      const timer = setTimeout(() => setIsMounted(false), 300);
+      const timer = setTimeout(() => setIsMounted(false), 500);
       return () => clearTimeout(timer);
     }
   }, [open]);
@@ -90,16 +79,16 @@ export function ConfirmActionDialog({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-500 ease-in-out",
         isVisible ? "opacity-100" : "opacity-0"
       )}
     >
       <div
         className={cn(
-          "bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform",
+          "bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] transform",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
-            : "scale-95 translate-y-4 opacity-0"
+            : "scale-90 translate-y-8 opacity-0"
         )}
       >
         <div
