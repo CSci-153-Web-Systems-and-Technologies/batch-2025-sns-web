@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import {
   X,
   Search,
-  UserCircle,
   Check,
   Loader2,
-  MinusCircle,
   PlusCircle,
+  UserCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,10 +51,12 @@ export function ManageStudentsDialog({
   useEffect(() => {
     if (open) {
       setIsMounted(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setIsVisible(true));
-      });
       fetchEnrollments();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
     } else {
       setIsVisible(false);
       const timer = setTimeout(() => setIsMounted(false), 300);
@@ -90,7 +91,6 @@ export function ManageStudentsDialog({
       newSet.delete(studentId);
       setEnrolledStudentIds(newSet);
     } else {
-      // Enroll
       await supabase
         .from("enrollments")
         .insert({ class_id: classId, student_id: studentId });
@@ -115,7 +115,7 @@ export function ManageStudentsDialog({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
         isVisible ? "opacity-100" : "opacity-0"
       )}
     >
@@ -127,44 +127,48 @@ export function ManageStudentsDialog({
             : "scale-95 translate-y-4 opacity-0"
         )}
       >
-        <div className="bg-gradient-to-b from-[#146939] to-[#17321A] p-6 text-white flex justify-between items-center relative shrink-0">
-          <div className="relative z-10">
-            <h2 className="text-xl font-bold font-montserrat">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#146939] to-[#00954f]"></div>
+
+        <div className="px-6 pt-8 pb-4 flex justify-between items-start shrink-0">
+          <div>
+            <h2 className="text-2xl font-bold font-montserrat text-[#17321A]">
               Manage Students
             </h2>
-            <p className="text-xs text-gray-200 font-roboto mt-1 opacity-80">
-              Enrolling students for{" "}
-              <span className="font-bold text-white">{className}</span>
+            <p className="text-sm text-gray-500 font-roboto mt-1">
+              Select students to enroll in{" "}
+              <span className="font-semibold text-[#146939]">{className}</span>
             </p>
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="text-white/70 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors relative z-10 cursor-pointer"
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors cursor-pointer -mr-2 -mt-2"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+        <div className="px-6 pb-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
-              placeholder="Search students..."
+              placeholder="Search by name or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 border-gray-200 focus:border-[#00954f] focus:ring-[#00954f]"
+              className="pl-10 border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 h-11"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
           {loading ? (
-            <div className="flex justify-center items-center h-full text-[#146939]">
-              <Loader2 className="h-8 w-8 animate-spin" />
+            <div className="flex flex-col justify-center items-center h-full text-gray-400 gap-2">
+              <Loader2 className="h-8 w-8 animate-spin text-[#146939]" />
+              <span className="text-sm font-roboto">Loading students...</span>
             </div>
           ) : filteredStudents.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No students found.
+            <div className="flex flex-col justify-center items-center h-full text-gray-400 gap-2">
+              <UserCircle className="h-10 w-10 opacity-20" />
+              <span className="text-sm font-roboto">No students found.</span>
             </div>
           ) : (
             <div className="space-y-2">
@@ -176,19 +180,19 @@ export function ManageStudentsDialog({
                   <div
                     key={student.id}
                     className={cn(
-                      "flex items-center justify-between p-3 rounded-lg border transition-all duration-200",
+                      "flex items-center justify-between p-3 rounded-xl border transition-all duration-200 group",
                       isEnrolled
-                        ? "bg-[#e6f4ea] border-[#00954f]/30"
-                        : "bg-white border-gray-100 hover:border-gray-300"
+                        ? "bg-[#e6f4ea]/50 border-[#00954f]/20"
+                        : "bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm"
                     )}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <div
                         className={cn(
-                          "h-10 w-10 rounded-full flex items-center justify-center font-bold font-montserrat transition-colors",
+                          "h-10 w-10 rounded-full flex items-center justify-center font-bold font-montserrat text-sm transition-colors",
                           isEnrolled
                             ? "bg-[#146939] text-white"
-                            : "bg-gray-100 text-gray-500"
+                            : "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
                         )}
                       >
                         {student.full_name.charAt(0)}
@@ -196,7 +200,7 @@ export function ManageStudentsDialog({
                       <div>
                         <p
                           className={cn(
-                            "font-semibold font-montserrat",
+                            "font-semibold font-montserrat text-sm",
                             isEnrolled ? "text-[#17321A]" : "text-gray-700"
                           )}
                         >
@@ -214,21 +218,21 @@ export function ManageStudentsDialog({
                       disabled={isProcessing}
                       onClick={() => toggleEnrollment(student.id)}
                       className={cn(
-                        "min-w-[100px] transition-all cursor-pointer font-montserrat text-xs",
+                        "min-w-[105px] h-9 transition-all cursor-pointer font-montserrat text-xs font-semibold rounded-lg shadow-sm",
                         isEnrolled
-                          ? "border-[#146939] text-[#146939] hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                          : "bg-[#146939] hover:bg-[#00954f] text-white"
+                          ? "border-[#146939]/30 text-[#146939] hover:bg-red-50 hover:text-red-600 hover:border-red-200 hover:shadow-none"
+                          : "bg-[#146939] hover:bg-[#00954f] text-white hover:shadow-md hover:-translate-y-0.5"
                       )}
                     >
                       {isProcessing ? (
                         <Loader2 className="h-3 w-3 animate-spin" />
                       ) : isEnrolled ? (
                         <>
-                          <Check className="h-3 w-3 mr-1" /> Enrolled
+                          <Check className="h-3 w-3 mr-1.5" /> Enrolled
                         </>
                       ) : (
                         <>
-                          <PlusCircle className="h-3 w-3 mr-1" /> Enroll
+                          <PlusCircle className="h-3 w-3 mr-1.5" /> Enroll
                         </>
                       )}
                     </Button>
