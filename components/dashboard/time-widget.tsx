@@ -15,7 +15,7 @@ export function TimeWidget() {
   if (!time) return null;
 
   return (
-    <div className="bg-gradient-to-br from-[#146939] to-[#00954f] rounded-xl p-6 text-white shadow-lg flex items-center justify-between relative overflow-hidden min-w-[260px] transition-all hover:shadow-xl">
+    <div className="bg-gradient-to-t from-[#146939] to-[#17321A] rounded-xl p-6 text-white shadow-lg flex items-center justify-between relative overflow-hidden min-w-[260px] transition-all hover:shadow-xl">
       <Clock className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10" />
 
       <div className="relative z-10">

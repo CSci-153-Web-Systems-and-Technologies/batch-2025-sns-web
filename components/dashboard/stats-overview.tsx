@@ -15,16 +15,16 @@ const stats = [
     value: "28",
     description: "From yesterday's Biology quiz",
     icon: FileWarning,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
+    color: "text-[#00954f]",
+    bg: "bg-[#e6f4ea]",
   },
   {
     title: "Exams Managed",
     value: "12",
     description: "3 exams scheduled this week",
     icon: GraduationCap,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-[#17321A]",
+    bg: "bg-[#e6f4ea]",
   },
 ];
 
@@ -34,7 +34,7 @@ export function StatsOverview() {
       {stats.map((stat, index) => (
         <Card
           key={index}
-          className="border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 bg-white group overflow-hidden relative cursor-pointer"
+          className="border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white group overflow-hidden relative cursor-pointer hover:-translate-y-2"
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-[#146939] opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
