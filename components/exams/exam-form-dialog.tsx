@@ -70,7 +70,19 @@ export function ExamFormDialog({
     const classCode = formData.get("classCode") as string;
     const date = formData.get("date") as string;
 
-    const examData = { name, class_code: classCode, date };
+    const selectedClass = availableClasses.find((c) => c.code === classCode);
+    if (!selectedClass) {
+      setLoading(false);
+      console.error("Class not found");
+      return;
+    }
+
+    const examData = {
+      name,
+      class_code: classCode,
+      class_id: selectedClass.id,
+      date,
+    };
 
     let error;
 

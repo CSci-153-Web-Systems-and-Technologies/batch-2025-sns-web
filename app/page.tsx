@@ -7,20 +7,10 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
+
+  if (user) {
+    return redirect("/dashboard");
+  } else {
+    return redirect("/login");
   }
-
-  return (
-    <div className="min-h-screen p-8 font-sans">
-      <h1 className="text-2xl font-bold">Welcome, {user.email}</h1>
-      <p className="mt-4">You are now logged in to the dashboard.</p>
-
-      <form action="/auth/signout" method="post" className="mt-4">
-        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-          Sign Out
-        </button>
-      </form>
-    </div>
-  );
 }

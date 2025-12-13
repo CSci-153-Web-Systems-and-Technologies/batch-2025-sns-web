@@ -14,25 +14,43 @@ export default async function ResultsPage() {
 
   if (error) console.error("Error fetching exams:", error);
 
-  const examIds = examsData?.map((e) => e.id) || [];
-  let examCounts: Record<string, number> = {};
+  const formattedExams = await Promise.all(
+    (examsData || []).map(async (exam) => {
+      const { data: classData } = await supabase
+        .from("classes")
+        .select("id")
+        .eq("code", exam.class_code)
+        .single();
 
-  if (examIds.length > 0) {
-    const { data: results } = await supabase
-      .from("results")
-      .select("exam_id")
-      .in("exam_id", examIds);
+      if (!classData) return { ...exam, student_count: 0, total_students: 0 };
 
-    results?.forEach((r) => {
-      examCounts[r.exam_id] = (examCounts[r.exam_id] || 0) + 1;
-    });
-  }
+      const { data: enrolledStudents } = await supabase
+        .from("enrollments")
+        .select("student_id")
+        .eq("class_id", classData.id);
 
-  const formattedExams =
-    examsData?.map((exam) => ({
-      ...exam,
-      student_count: examCounts[exam.id] || 0,
-    })) || [];
+      const enrolledIds = enrolledStudents?.map((e) => e.student_id) || [];
+      const totalEnrolled = enrolledIds.length;
+
+      let validGradedCount = 0;
+
+      if (totalEnrolled > 0) {
+        const { count } = await supabase
+          .from("results")
+          .select("*", { count: "exact", head: true })
+          .eq("exam_id", exam.id)
+          .in("student_id", enrolledIds);
+
+        validGradedCount = count || 0;
+      }
+
+      return {
+        ...exam,
+        student_count: validGradedCount,
+        total_students: totalEnrolled,
+      };
+    })
+  );
 
   const readyExams = formattedExams.filter((e) => e.student_count > 0);
 
