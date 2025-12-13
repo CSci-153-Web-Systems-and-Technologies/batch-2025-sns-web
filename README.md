@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SNS (Scores Notification System)
 
-## Getting Started
+A comprehensive web application designed for teachers to manage student records, organize classes, and securely release exam results via email notifications. Built with **Next.js 16**, **Supabase**, and **Tailwind CSS**.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **Teacher Authentication:** Secure login system for authorized faculty.
+-   **Dashboard:** Real-time overview of recent exams, quick actions, and system stats.
+-   **Student Management:** Add, edit, and manage student profiles. Includes bulk import functionality.
+-   **Class Management:** Create classes and enroll students.
+-   **Result Processing:** Input scores and release exam results.
+-   **Automated Emails:** Students receive branded email notifications with their results immediately upon release.
+-   **Responsive Design:** Modern UI built with Tailwind CSS v4, optimized for desktop and tablet.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+-   **Language:** [TypeScript](https://www.typescriptlang.org/)
+-   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) & `tailwindcss-animate`
+-   **Backend & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, Auth)
+-   **Icons:** [Lucide React](https://lucide.dev/)
+-   **Email:** [Nodemailer](https://nodemailer.com/) & [React Email](https://react.email/)
+-   **UI Components:** Custom components built on Radix UI primitives.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Prerequisites
 
-## Learn More
+Before you begin, ensure you have the following installed:
+-   [Node.js](https://nodejs.org/) (v18 or higher recommended)
+-   npm, yarn, pnpm, or bun
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/your-username/batch-2025-sns-web.git](https://github.com/your-username/batch-2025-sns-web.git)
+    cd batch-2025-sns-web
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-## Deploy on Vercel
+3.  **Configure Environment Variables:**
+    Create a `.env.local` file in the root directory and add your Supabase and Email credentials:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```env
+    # Supabase Configuration
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    
+    # (Optional) Service Role for Admin tasks if needed
+    # SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    # Email Configuration (Nodemailer)
+    SMTP_HOST=smtp.example.com
+    SMTP_PORT=587
+    SMTP_USER=your_email@example.com
+    SMTP_PASS=your_email_password
+    ```
+
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+
+5.  **Open the app:**
+    Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🗂️ Project Structure
+
+```text
+├── app/                  # Next.js App Router pages and layouts
+│   ├── dashboard/        # Protected dashboard routes (Students, Classes, Exams)
+│   ├── forgot-password/  # Forgot password page
+│   ├── login/            # Login page
+│   └── globals.css       # Global styles and Tailwind directives
+├── components/           # Reusable UI components
+│   ├── auth/             # Login forms and buttons
+│   ├── classes/          # Class management components
+│   ├── dashboard/        # Widgets and sidebar
+│   ├── emails/           # Email templates
+│   ├── results/          # Result processing logic
+│   ├── students/         # Student forms and tables
+│   └── ui/               # Generic UI elements (Buttons, Inputs, Dialogs)
+├── lib/                  # Utility functions (cn, etc.)
+├── public/               # Static assets
+└── utils/                # Supabase client/server utilities
