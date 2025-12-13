@@ -1,34 +1,46 @@
 import { Users, FileWarning, GraduationCap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const stats = [
-  {
-    title: "Total Students",
-    value: "142",
-    description: "Across 4 active classes",
-    icon: Users,
-    color: "text-[#146939]",
-    bg: "bg-[#e6f4ea]",
-  },
-  {
-    title: "Pending Results",
-    value: "28",
-    description: "From yesterday's Biology quiz",
-    icon: FileWarning,
-    color: "text-[#00954f]",
-    bg: "bg-[#e6f4ea]",
-  },
-  {
-    title: "Exams Managed",
-    value: "12",
-    description: "3 exams scheduled this week",
-    icon: GraduationCap,
-    color: "text-[#17321A]",
-    bg: "bg-[#e6f4ea]",
-  },
-];
+interface StatsOverviewProps {
+  totalStudents: number;
+  activeClasses: number;
+  pendingResults: number;
+  examsManaged: number;
+}
 
-export function StatsOverview() {
+export function StatsOverview({
+  totalStudents,
+  activeClasses,
+  pendingResults,
+  examsManaged,
+}: StatsOverviewProps) {
+  const stats = [
+    {
+      title: "Total Students",
+      value: totalStudents.toString(),
+      description: `Across ${activeClasses} active classes`,
+      icon: Users,
+      color: "text-[#146939]",
+      bg: "bg-[#e6f4ea]",
+    },
+    {
+      title: "Pending Results",
+      value: pendingResults.toString(),
+      description: "From recent assessments",
+      icon: FileWarning,
+      color: "text-[#00954f]",
+      bg: "bg-[#e6f4ea]",
+    },
+    {
+      title: "Exams Managed",
+      value: examsManaged.toString(),
+      description: "Scheduled and active exams",
+      icon: GraduationCap,
+      color: "text-[#17321A]",
+      bg: "bg-[#e6f4ea]",
+    },
+  ];
+
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {stats.map((stat, index) => (
