@@ -14,7 +14,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "SNS Teacher Portal",
+  title: "SNS - Scores Notification System",
   description: "Exam Result Notification System",
 };
 
