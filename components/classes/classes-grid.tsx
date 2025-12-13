@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { CreateClassDialog } from "./create-class-dialog";
+import { ClassFormDialog } from "./class-form-dialog";
 
 interface ClassItem {
   id: string;
@@ -143,7 +143,7 @@ export function ClassesGrid({ classes }: ClassesGridProps) {
         </button>
       </div>
 
-      <CreateClassDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+      <ClassFormDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
     </>
   );
 }
