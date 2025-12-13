@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 import { cn } from "@/lib/utils";
-import { ChangePasswordDialog } from "@/components/auth/change-password-dialog";
-import { createClient } from "@/utils/supabase/client";
 
 export default function DashboardLayout({
   children,
@@ -14,7 +12,6 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -22,19 +19,6 @@ export default function DashboardLayout({
     if (savedState !== null) {
       setIsSidebarOpen(JSON.parse(savedState));
     }
-
-    const checkUserStatus = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user && user.user_metadata?.must_change_password) {
-        setShowPasswordDialog(true);
-      }
-    };
-
-    checkUserStatus();
   }, []);
 
   const setSidebarState = (value: boolean | ((prev: boolean) => boolean)) => {
@@ -56,6 +40,7 @@ export default function DashboardLayout({
       <div
         className={cn(
           "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out",
+
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         )}
       >
@@ -65,11 +50,6 @@ export default function DashboardLayout({
           <div className="max-w-7xl mx-auto w-full">{children}</div>
         </main>
       </div>
-
-      <ChangePasswordDialog
-        open={showPasswordDialog}
-        onOpenChange={setShowPasswordDialog}
-      />
     </div>
   );
 }
