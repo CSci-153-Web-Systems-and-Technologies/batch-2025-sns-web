@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function verifyEmail(formData: FormData) {
   const email = formData.get("email") as string;
@@ -17,9 +19,6 @@ export async function verifyEmail(formData: FormData) {
   return { success: true, name: firstName };
 }
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
@@ -32,6 +31,20 @@ export async function login(formData: FormData) {
 
   if (error) {
     return { error: "Invalid credentials. Please try again." };
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const mustChangePassword = user.user_metadata?.must_change_password;
+
+    if (mustChangePassword === undefined) {
+      await supabase.auth.updateUser({
+        data: { must_change_password: true },
+      });
+    }
   }
 
   revalidatePath("/", "layout");
