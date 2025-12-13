@@ -121,7 +121,7 @@ export function ManageStudentsDialog({
     >
       <div
         className={cn(
-          "bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform h-[80vh] flex flex-col",
+          "bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden relative transition-all duration-300 ease-out transform h-[80vh] flex flex-col",
           isVisible
             ? "scale-100 translate-y-0 opacity-100"
             : "scale-95 translate-y-4 opacity-0"
@@ -154,7 +154,7 @@ export function ManageStudentsDialog({
               placeholder="Search by name or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 h-11"
+              className="pl-10 border-gray-200 focus:border-[#00954f] focus:ring-[#00954f] bg-gray-50/50 h-11 rounded-xl"
             />
           </div>
         </div>
