@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Roboto, Cinzel } from "next/font/google";
+import { Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -14,12 +14,6 @@ const roboto = Roboto({
   weight: ["400", "500", "700"],
 });
 
-const trajan = Cinzel({
-  subsets: ["latin"],
-  variable: "--font-trajan",
-  weight: ["400", "600"],
-});
-
 export const metadata: Metadata = {
   title: "SNS - Exam Result Notification",
   description: "Secure Login System",
@@ -32,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${montserrat.variable} ${roboto.variable} ${trajan.variable} antialiased`}
-      >
+      <body className={`${montserrat.variable} ${roboto.variable} antialiased`}>
         {children}
       </body>
     </html>

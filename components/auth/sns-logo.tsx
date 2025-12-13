@@ -22,7 +22,7 @@ export function SNSLogo({ size = "lg" }: SNSLogoProps) {
       </div>
 
       <h1
-        className={`font-bold tracking-tight text-[#146939] font-trajan ${
+        className={`font-bold tracking-tight text-[#146939] font-montserrat ${
           isLarge ? "text-4xl sm:text-5xl" : "text-2xl"
         }`}
       >

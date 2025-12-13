@@ -6,7 +6,6 @@
 @theme {
   --font-montserrat: var(--font-montserrat);
   --font-roboto: var(--font-roboto);
-  --font-trajan: var(--font-trajan);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
