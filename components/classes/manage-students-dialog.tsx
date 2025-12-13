@@ -27,6 +27,9 @@ interface ManageStudentsDialogProps {
   classId: string;
   className: string;
   allStudents: Student[];
+
+  title?: string;
+  actionLabel?: string;
 }
 
 export function ManageStudentsDialog({
@@ -35,6 +38,8 @@ export function ManageStudentsDialog({
   classId,
   className,
   allStudents,
+  title = "Manage Students",
+  actionLabel = "Enroll",
 }: ManageStudentsDialogProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -132,10 +137,10 @@ export function ManageStudentsDialog({
         <div className="px-6 pt-8 pb-4 flex justify-between items-start shrink-0">
           <div>
             <h2 className="text-2xl font-bold font-montserrat text-[#17321A]">
-              Manage Students
+              {title}
             </h2>
             <p className="text-sm text-gray-500 font-roboto mt-1">
-              Select students to enroll in{" "}
+              Select students to add to{" "}
               <span className="font-semibold text-[#146939]">{className}</span>
             </p>
           </div>
@@ -228,11 +233,12 @@ export function ManageStudentsDialog({
                         <Loader2 className="h-3 w-3 animate-spin" />
                       ) : isEnrolled ? (
                         <>
-                          <Check className="h-3 w-3 mr-1.5" /> Enrolled
+                          <Check className="h-3 w-3 mr-1.5" /> Added
                         </>
                       ) : (
                         <>
-                          <PlusCircle className="h-3 w-3 mr-1.5" /> Enroll
+                          <PlusCircle className="h-3 w-3 mr-1.5" />{" "}
+                          {actionLabel}
                         </>
                       )}
                     </Button>

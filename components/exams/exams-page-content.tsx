@@ -8,6 +8,7 @@ import {
   PlusCircle,
   Edit,
   Trash2,
+  ClipboardList,
 } from "lucide-react";
 import {
   Card,
@@ -27,6 +28,8 @@ import { ExamFormDialog } from "./exam-form-dialog";
 import { ConfirmActionDialog } from "@/components/classes/confirm-action-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface ExamItem {
   id: string;
@@ -94,7 +97,7 @@ export function ExamsPageContent({
         {exams.map((exam) => (
           <Card
             key={exam.id}
-            className="group relative border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white overflow-hidden hover:-translate-y-2 rounded-2xl"
+            className="group relative border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ease-out bg-white overflow-hidden hover:-translate-y-2 rounded-2xl flex flex-col justify-between"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#146939] to-[#00954f] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -128,7 +131,7 @@ export function ExamsPageContent({
                     onClick={() => setExamToEdit(exam)}
                     className="cursor-pointer font-roboto text-gray-600 focus:text-[#146939] focus:bg-[#e6f4ea] rounded-lg"
                   >
-                    <Edit className="mr-2 h-4 w-4" /> Edit Exam
+                    <Edit className="mr-2 h-4 w-4" /> Edit Details
                   </DropdownMenuItem>
                   <div className="h-px bg-gray-50 my-1"></div>
                   <DropdownMenuItem
@@ -153,17 +156,12 @@ export function ExamsPageContent({
               </div>
             </CardContent>
 
-            <CardFooter className="pt-4 border-t border-gray-50 mt-4 bg-gray-50/30 flex justify-between items-center">
-              <span className="text-xs text-gray-400 font-medium font-roboto">
-                Scheduled
-              </span>
-              <Button
-                variant="ghost"
-                onClick={() => setExamToEdit(exam)}
-                className="text-[#146939] hover:text-[#00954f] hover:bg-[#e6f4ea] font-montserrat text-xs font-bold rounded-xl h-8 px-3 transition-all cursor-pointer"
-              >
-                Manage
-              </Button>
+            <CardFooter className="pt-4 border-t border-gray-50 mt-4 bg-gray-50/30 flex gap-2">
+              <Link href={`/dashboard/results/${exam.id}`} className="w-full">
+                <Button className="w-full bg-[#146939] hover:bg-[#00954f] text-white font-montserrat text-xs font-bold rounded-xl h-10 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <ClipboardList className="mr-2 h-4 w-4" /> Input Scores
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
